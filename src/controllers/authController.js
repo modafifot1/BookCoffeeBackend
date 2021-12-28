@@ -86,5 +86,48 @@ const login = async (req, res, next) => {
     next(error);
   }
 };
-
+/**
+ * @api {post} /api/v1/auth/token Get new token
+ * @apiName Get new token
+ * @apiGroup Auth
+ * @apiParam {String} refreshToken user's refresh token
+ * @apiSuccess {Int} status <code> 200</code>
+ * @apiSuccess {String} msg <code>Refresh token successfully!</code> if everything went fine.
+ * @apiSuccess {String} token <code>Token of user </code>
+ * @apiSuccessExample {json} Success-Example
+ *     HTTP/1.1 200 OK
+ *     {
+ *         status: 200,
+ *         msg: "Refresh token successfully!",
+ *         token: "xxx.xxx.xxx",
+ *    }
+ * @apiErrorExample Response (example):
+ *     HTTP/1.1 400
+ *     {
+ *       "status" : 401,
+ *       "msg":  RefreshToken expired!"
+ *     }
+ */
+const getToken = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    console.log("Refresh token: ", refreshToken);
+    if (!refreshToken) throw createHttpError(400, "No refresh token!");
+    const data = await verifyToken(refreshToken, refreshTokenSecret);
+    const { _id, email, roleId } = data;
+    const userData = { _id, email, roleId };
+    const token = await encodeToken(userData, tokenSecret, tokenLife);
+    res.status(200).json({
+      status: 200,
+      msg: "Refresh token successfully!",
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    if (error.status == 400) next(error);
+    else {
+      next(createHttpError(error.status, `Refresh ${error.message}`));
+    }
+  }
+};
 export const authController = { login };

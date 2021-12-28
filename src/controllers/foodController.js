@@ -1,4 +1,4 @@
-import { Food } from "../models";
+import { Food, Feedback } from "../models";
 import { uploadSingle, deleteImage, envVariables } from "../configs";
 const { numOfPerPage } = envVariables;
 const LOG_TAG = "foodController";
@@ -150,8 +150,23 @@ const getFoodById = async (req, res, next) => {
   try {
     const foodId = req.params.foodId;
     console.log("FoodId :", foodId);
-    const food = await Food.findById(foodId);
-
+    let food = await Food.findById(foodId);
+    let feedbacks = await Feedback.find({ foodId }).limit(2);
+    feedbacks = feedbacks.map((item) => {
+      return {
+        _id: item._id,
+        userName: item.userName,
+        content: item.content,
+        numOfStars: item.numOfStars,
+        createAt: item.createAt,
+        replies: item.reply,
+      };
+    });
+    food = {
+      ...food._doc,
+      feedbacks,
+    };
+    console.log("Food: ", food);
     res.status(200).json({
       status: 200,
       msg: "Get food successfully!",

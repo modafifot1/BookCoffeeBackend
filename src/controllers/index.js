@@ -1,3 +1,4 @@
 import { authController } from "./authController";
 import { foodController } from "./foodController";
-export { authController, foodController };
+import { cartController } from "./cartController";
+export { authController, foodController, cartController };
