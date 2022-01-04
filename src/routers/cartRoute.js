@@ -13,7 +13,7 @@ export const cartRoute = Router();
 cartRoute.use(`${baseUrl}`, authMiddleware);
 cartRoute.route(`${baseUrl}`).get(getListCartItem);
 cartRoute.route(`${baseUrl}`).post(createNewCartItem);
-cartRoute.route(`${baseUrl}`).put(updateCartItem);
+cartRoute.route(`${baseUrl}/:cartId`).put(updateCartItem);
 cartRoute.route(`${baseUrl}`).delete(deleteCartItem);
 
 // cartRoute

@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
 import Mongoose from "mongoose";
-import { CartItem } from "../models";
+import { CartItem, Food } from "../models";
 const LOG_TAG = "cartController";
 /**
  * @api {get} /api/v1/carts Get cart item
@@ -56,7 +56,9 @@ const getListCartItem = async (req, res, next) => {
       },
     ]);
     console.log(cartItems[0]);
+    let totalItems = 0;
     cartItems = cartItems.map((x) => {
+      totalItems += x.quantity;
       return {
         _id: x._id,
         foodId: x.foodId,
@@ -71,6 +73,7 @@ const getListCartItem = async (req, res, next) => {
       status: 200,
       msg: "Get cart item successfully!",
       cartItems,
+      numOfAddedItems: totalItems,
     });
     console.log(LOG_TAG, "getListCartItem end!");
   } catch (error) {
@@ -166,17 +169,13 @@ const addOneCartItem = async (userId, foodId, quantity) => {
   }
 };
 /**
- * @api {put} /api/v1/carts Update cart item
+ * @api {put} /api/v1/carts/:cartId Update cart item
  * @apiName Update cart item
  * @apiGroup Cart
- * @apiParam {Object} cartItems key-_itemId, value-quantity
+ * @apiParam {Number} quantity
  * @apiParamExample {json} Param example
  * {
- *      cartItems:
- *        {
- *          "607faeb5d35ea403f0328a38": 3,
- *        }
- *
+ *      quantity: 3
  * }
  *
  * @apiHeader {String} Authorization The token can be generated from your user profile.
@@ -200,21 +199,12 @@ const addOneCartItem = async (userId, foodId, quantity) => {
 const updateCartItem = async (req, res, next) => {
   try {
     console.log(LOG_TAG, "updateCartItem begin!");
-    let { cartItems } = req.body;
-    console.log(LOG_TAG, "cartItems: ", cartItems);
-    cartItems = JSON.parse(cartItems);
-    const keys = Object.keys(cartItems);
-    console.log(keys[0], typeof cartItems);
-    const cartItem = await Promise.all(
-      keys.map((x) => {
-        console.log("_id: ", x);
-        return CartItem.findByIdAndUpdate(x, {
-          quantity: cartItems[x],
-        });
-      })
-    );
-    if (!cartItem) {
-      throw createHttpError(404, "Not found item");
+    const { cartId } = req.params;
+    const { quantity } = req.body;
+    console.log(LOG_TAG, "cartId: ", cartId, ", quantity: ", quantity);
+    const result = await CartItem.findByIdAndUpdate(cartId, { quantity });
+    if (!result) {
+      throw createHttpError(404, "Not found cart item");
     }
     res.status(200).json({
       status: 200,
@@ -270,7 +260,8 @@ const deleteCartItem = async (req, res, next) => {
     }
     res.status(200).json({
       status: 200,
-      msg: "Delete cart itme successfully",
+      msg: "Delete cart item successfully",
+      cartItems,
     });
     console.log(LOG_TAG, "deleteCartItem end!");
   } catch (error) {
