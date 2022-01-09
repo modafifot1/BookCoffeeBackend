@@ -4,4 +4,18 @@ import { UserDetail } from "./UserDetailModel";
 import { Food } from "./FoodModel";
 import { CartItem } from "./CartItemModel";
 import { Feedback, Reply } from "./FeedbackModel";
-export { Token, User, UserDetail, Food, CartItem, Feedback, Reply };
+import { Table } from "./TableModel";
+import { OrderItem } from "./OrderItemModel";
+import { Order } from "./OrderModel";
+export {
+  Token,
+  User,
+  UserDetail,
+  Food,
+  CartItem,
+  Feedback,
+  Reply,
+  Table,
+  Order,
+  OrderItem,
+};

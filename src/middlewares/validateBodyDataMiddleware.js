@@ -20,7 +20,42 @@ const validateNewFoodData = async (req, res, next) => {
     next(error);
   }
 };
-
+const validateCreateOrder = async (req, res, next) => {
+  try {
+    if (typeof req.body.cartItems != "object") {
+      req.body.cartItems = [req.body.cartItems];
+    }
+    const orderSchema = joi.object({
+      cartItems: joi.array().min(1).required(),
+      tableCode: joi.number().required(),
+    });
+    validateRequest(req, orderSchema, next);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+const validateCreatePurchase = async (req, res, next) => {
+  try {
+    if (typeof req.body.cartItems != "object") {
+      req.body.cartItems = [req.body.cartItems];
+    }
+    const orderSchema = joi.object({
+      address: joi.string().required(),
+      cartItems: joi.array().min(1).required(),
+      paymentMethod: joi.string().required(),
+      merchandiseSubtotal: joi.number().required().min(0),
+      shipmentFee: joi.number().required().min(0),
+      tableId: joi.string().required(),
+    });
+    validateRequest(req, orderSchema, next);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 export const validateBodyData = {
   validateNewFoodData,
+  validateCreateOrder,
+  validateCreatePurchase,
 };
