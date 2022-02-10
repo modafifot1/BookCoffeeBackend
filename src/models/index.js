@@ -7,6 +7,7 @@ import { Feedback, Reply } from "./FeedbackModel";
 import { Table } from "./TableModel";
 import { OrderItem } from "./OrderItemModel";
 import { Order } from "./OrderModel";
+import { ResetCode } from "./ResetCodeModel";
 export {
   Token,
   User,
@@ -18,4 +19,5 @@ export {
   Table,
   Order,
   OrderItem,
+  ResetCode,
 };

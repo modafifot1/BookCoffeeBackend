@@ -37,16 +37,12 @@ const validateCreateOrder = async (req, res, next) => {
 };
 const validateCreatePurchase = async (req, res, next) => {
   try {
-    if (typeof req.body.cartItems != "object") {
-      req.body.cartItems = [req.body.cartItems];
-    }
+    console.log(req.body);
     const orderSchema = joi.object({
-      address: joi.string().required(),
       cartItems: joi.array().min(1).required(),
       paymentMethod: joi.string().required(),
-      merchandiseSubtotal: joi.number().required().min(0),
-      shipmentFee: joi.number().required().min(0),
-      tableId: joi.string().required(),
+      tableCode: joi.number().required(),
+      total: joi.number().required(),
     });
     validateRequest(req, orderSchema, next);
   } catch (error) {

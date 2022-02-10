@@ -6,11 +6,12 @@ import {
   getHash,
   getSignatue,
 } from "../utils";
-import { CartItem, Order, OrderItem, Table } from "../models";
+import { CartItem, Order, OrderItem, Table, Food } from "../models";
 import { envVariables, geocoder, MySocket } from "../configs";
 const { my_address, public_key, secret_key, partner_code } = envVariables;
 const axios = require("axios").default;
 const { v1: uuidv1 } = require("uuid");
+const signature = "";
 const LOG_TAG = "orderController";
 /**
  * @api {get} /api/v1/orders Get list order by userId
@@ -180,27 +181,19 @@ const getOrderById = async (req, res, next) => {
         imageUrl: x.detail[0].imageUrl,
       };
     });
-    let status = await OrderStatus.findOne({ id: order[0].statusId });
-    status = status.description;
-    const data = {
-      status: 200,
-      msg: "Get order successfully!",
-      _id: order[0]._id,
-      address: order[0].address,
-      total: order[0].total,
-      orderStatus: status,
-      createAt: order[0].createAt,
-      orderItems,
-    };
+
     res.status(200).json({
       status: 200,
       msg: "Get order successfully!",
       _id: order[0]._id,
-      address: order[0].address,
       total: order[0].total,
-      orderStatus: status,
       createAt: order[0].createAt,
       orderItems,
+      tableCode: order[0].tableCode,
+      numOfItems: order[0].numOfItems,
+      statusId: order[0].statusId,
+      paymentMethod: order[0].paymentMethod,
+      isPaid: order[0].isPaid,
     });
     console.log(LOG_TAG, "getOrderById end!");
   } catch (error) {
@@ -320,32 +313,17 @@ const order = async (req, res, next) => {
 const purchase = async (req, res, next) => {
   try {
     const customerId = req.user._id;
-    let {
-      address,
-      cartItems,
-      paymentMethod,
-      merchandiseSubtotal,
-      shipmentFee,
-      tableId,
-    } = req.body;
-    const table = await Table.findById(tableId);
+    let { cartItems, paymentMethod, tableCode, total } = req.body;
+    const table = await Table.findOne({ tableCode });
     if (table.status == 1) {
       throw createHttpError(404, "Table is reservered!");
     } else {
-      await Table.findByIdAndUpdate(tableId, { status: 1 });
+      // await Table.findOneAndUpdate({ tableCode }, { status: 1 });
     }
     cartItems = cartItems.map((x) => {
       return Mongoose.Types.ObjectId(x);
     });
-    const newOrder = await Order.create({
-      customerId,
-      address,
-      total: merchandiseSubtotal + shipmentFee,
-      statusId: 0,
-      paymentMethod,
-      merchandiseSubtotal,
-      shipmentFee,
-    });
+
     let foods = await CartItem.aggregate([
       {
         $lookup: {
@@ -364,6 +342,21 @@ const purchase = async (req, res, next) => {
       },
     ]);
     await CartItem.deleteMany({ _id: { $in: cartItems } });
+    const firstFoodItem = foods[0].detail[0];
+
+    const newOrder = await Order.create({
+      customerId,
+      total,
+      statusId: 0,
+      paymentMethod,
+      item: {
+        ...firstFoodItem,
+        quantity: foods[0].quantity,
+        total: total,
+      },
+      tableCode,
+      numOfItems: foods.length,
+    });
     let orderItems = foods.map((x) => {
       return {
         foodId: x.foodId,
@@ -375,11 +368,12 @@ const purchase = async (req, res, next) => {
     await OrderItem.insertMany(orderItems);
 
     const io = MySocket.prototype.getInstance();
-    io.emit("NewOrder", "Create new order success!");
     res.status(201).json({
       status: 201,
       msg: "Purchase successfully!",
       orderId: newOrder._id,
+      createAt: newOrder.createAt,
+      total,
     });
   } catch (error) {
     console.log(error);
@@ -659,21 +653,29 @@ const getListOrderByStatus = async (req, res, next) => {
     const user = req.user;
     let orders;
     if (user.roleId == 1) {
-      orders = await Order.find({
-        customerId: user._id,
-        statusId,
-      });
-      orders = orders.map((x) => {
+      let filter;
+      if (statusId === -1) {
+        filter = {
+          customerId: user._id,
+        };
+      } else {
+        filter = {
+          customerId: user._id,
+          statusId,
+        };
+      }
+      orders = await Order.find(filter);
+      orders = orders.map((x, index) => {
         return {
           _id: x._id,
-          address: x.address,
           statusId: x.statusId,
           paymentMethod: x.paymentMethod,
-          merchandiseSubtotal: x.merchandiseSubtotal,
-          shipmentFee: x.shipmentFee,
           total: x.total,
           createAt: x.createAt,
           isPaid: x.isPaid,
+          item: x.item,
+          tableCode: x.tableCode,
+          numOfItems: x.numOfItems,
         };
       });
     } else if (statusId == 1) {
@@ -720,11 +722,11 @@ const getListOrderByStatus = async (req, res, next) => {
         });
       }
     }
+    console.log("orders: ", orders);
     res.status(200).json({
       status: 200,
       msg: "Get list order by status sucessfully!",
       orders,
-      shippers,
     });
   } catch (error) {
     console.log(error);
@@ -760,12 +762,11 @@ const momoPayment = async (req, res, next) => {
       version,
       payType,
     };
-    console.log("Data: ", bodyData);
     var { data } = await axios.post(
       "https://test-payment.momo.vn/pay/app",
       bodyData
     );
-    console.log(data);
+    console.log("Data: ", data);
     if (data.status != 0) throw createHttpError(400, data.message);
     await Order.findByIdAndUpdate(orderId, {
       isPaid: true,
