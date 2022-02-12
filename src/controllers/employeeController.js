@@ -40,6 +40,23 @@ import { confirmResetCode, getResetCode, sendEmail } from "../utils";
  */
 const getListEmployees = async (req, res, next) => {
   try {
+    const { searchText, employeeType } = req.query;
+    let filter = { roleId: 2 };
+    if (searchText) {
+      filter = {
+        ...filter,
+        email: {
+          $regex: searchText,
+        },
+      };
+    }
+    if (employeeType != 0) {
+      filter = {
+        ...filter,
+        isConfirmed: employeeType == -1 ? false : true,
+      };
+    }
+    console.log("Filter: ", filter);
     let listEmployees = await User.aggregate([
       {
         $lookup: {
@@ -50,9 +67,7 @@ const getListEmployees = async (req, res, next) => {
         },
       },
       {
-        $match: {
-          roleId: 2,
-        },
+        $match: filter,
       },
     ]);
     listEmployees = listEmployees.map((x) => {
@@ -65,8 +80,10 @@ const getListEmployees = async (req, res, next) => {
         birthday: x.userDetail[0].birthday,
         address: x.userDetail[0].address,
         isConfirmed: x.isConfirmed,
+        imageUrl: x.userDetail[0].imageUrl,
       };
     });
+    console.log(listEmployees);
     res.status(200).json({
       status: 200,
       msg: "Get list employee successfully!",
@@ -106,22 +123,20 @@ const getListEmployees = async (req, res, next) => {
  *     }
  */
 const createNewEmployee = async (req, res, next) => {
-  const { email, password, roleId, fullName, phoneNumber, birthday, address } =
+  const { email, password, fullName, phoneNumber, birthday, address } =
     req.body;
   try {
     const userExisted = await User.findOne({ email });
+    console.log("ExistedEmail: ", userExisted, fullName);
     if (userExisted) {
       throw createHttpError(400, "This email is used by others!");
-    }
-    const checkRole = await Role.findOne({ id: roleId });
-    if (!checkRole || checkRole.roleName != "employee") {
-      throw createHttpError(401, "Role is invalid");
+      return;
     }
     const hashPassword = await bcrypt.hash(password, 12);
     const newUser = await User.create({
       email,
       password: hashPassword,
-      roleId: roleId,
+      roleId: 2,
     });
 
     await UserDetail.create({
@@ -131,17 +146,17 @@ const createNewEmployee = async (req, res, next) => {
       birthday: new Date(birthday),
       address,
     });
-    await initPermissions(roleId, newUser._id);
     const code = await getResetCode(newUser._id, next);
     const link = `https://obscure-inlet-52224.herokuapp.com/api/v1/auth/confirm-email?code=${code}&&userId=${newUser._id}`;
     await sendEmail(
       email,
-      "Confirm Email",
+      `Confirm Email\n Your password is ${password}`,
       "Please click link bellow to confirm email!\n" + link
     );
     res.status(201).json({
       status: 201,
       msg: "Create a new employee successfully!",
+      userId: newUser._id,
     });
   } catch (error) {
     console.log(error);
@@ -252,13 +267,7 @@ const getEmpployeeById = async (req, res, next) => {
 const updateEmployeeById = async (req, res, next) => {
   try {
     const employeeId = req.params.employeeId;
-    const { roleId, fullName, phoneNumber, birthday } = req.body;
-    const employee = await User.findByIdAndUpdate(employeeId, {
-      roleId,
-    });
-    if (!employee) {
-      throw createHttpError(400, "An employee is not exist!");
-    }
+    const { fullName, phoneNumber, birthday } = req.body;
     await UserDetail.findOneAndUpdate(
       { userId: employeeId },
       {
@@ -277,7 +286,7 @@ const updateEmployeeById = async (req, res, next) => {
   }
 };
 /**
- * @api {delete} /api/v1/admin/employees/:employeeId Delete an employee by id
+ * @api {delete} /api/v1/admin/employees Delete an employee by id
  * @apiName Delete an employee
  * @apiGroup Admin
  * @apiParam {String} employeeId id's employee
@@ -301,20 +310,22 @@ const updateEmployeeById = async (req, res, next) => {
  */
 const deleteEmployeeById = async (req, res, next) => {
   try {
-    const employeeId = req.params.employeeId;
-    const employee = await Promise.all([
-      User.findByIdAndDelete(employeeId),
-      UserDetail.findOneAndDelete({ userId: employeeId }),
-    ]);
-    let delPermissions = await UserPermission.find({ userId: employeeId });
-    delPermissions = delPermissions.map((x) => x.permissionId);
-    await delPermissionsForUserEffected(delPermissions, 2);
-    if (!employee) {
-      throw createHttpError(400, "An employee is not exist!");
+    const employeeIds = req.body.employeeIds;
+    for (var i = 0; i < employeeIds.length; i++) {
+      console.log(employeeIds[i]);
+      const employee = await Promise.all([
+        User.findOneAndDelete({ _id: employeeIds[i], roleId: 2 }),
+
+        UserDetail.findOneAndDelete({ userId: employeeIds[i] }),
+      ]);
+      if (!employee) {
+        throw createHttpError(400, "An employee is not exist!");
+      }
     }
     res.status(200).json({
       status: 200,
       msg: "Delete an employee successfully!",
+      employeeIds,
     });
   } catch (error) {
     console.log(error);

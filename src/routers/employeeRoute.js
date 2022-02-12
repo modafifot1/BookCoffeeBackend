@@ -25,4 +25,4 @@ employeeRoute.route(`${baseUrl}`).get(getListEmployees);
 employeeRoute.route(`${baseUrl}/:employeeId`).get(getEmpployeeById);
 employeeRoute.route(`${baseUrl}`).post(createNewEmployee);
 employeeRoute.route(`${baseUrl}/:employeeId`).put(updateEmployeeById);
-employeeRoute.route(`${baseUrl}/:employeeId`).delete(deleteEmployeeById);
+employeeRoute.route(`${baseUrl}`).delete(deleteEmployeeById);

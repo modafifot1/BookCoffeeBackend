@@ -130,4 +130,38 @@ const getToken = async (req, res, next) => {
     }
   }
 };
-export const authController = { login };
+const registerNewCustomer = async (req, res, next) => {
+  const { email, password, fullName, phoneNumber, birthday, address } =
+    req.body;
+  try {
+    const userExisted = await User.findOne({ email });
+    console.log("ExistedEmail: ", userExisted, fullName);
+    if (userExisted) {
+      throw createHttpError(400, "This email is used by others!");
+      return;
+    }
+    const hashPassword = await bcrypt.hash(password, 12);
+    const newUser = await User.create({
+      email,
+      password: hashPassword,
+      roleId: 1,
+    });
+
+    await UserDetail.create({
+      userId: newUser._id,
+      fullName,
+      phoneNumber,
+      birthday: new Date(birthday),
+      address,
+    });
+    res.status(201).json({
+      status: 201,
+      msg: "Create a new customer successfully!",
+      userId: newUser._id,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+export const authController = { login, registerNewCustomer };

@@ -40,5 +40,6 @@ const foodSchema = new Schema({
     default: false,
   },
 });
+
 foodSchema.index({ name: "text" });
 export const Food = model("Food", foodSchema, "Food");
