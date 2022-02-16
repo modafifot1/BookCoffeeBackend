@@ -5,6 +5,9 @@ import { orderRoute } from "./orderRoute";
 import { tableRoute } from "./tableRoute";
 import { employeeRoute } from "./employeeRoute";
 import { customerRoute } from "./customerRoute";
+import { bookRoute } from "./bookRoute";
+import { borrowedBookRoute } from "./borrowedBookRoute";
+import { profileRoute } from "./profileRoute";
 export {
   authRoute,
   foodRoute,
@@ -13,4 +16,7 @@ export {
   tableRoute,
   employeeRoute,
   customerRoute,
+  bookRoute,
+  borrowedBookRoute,
+  profileRoute,
 };

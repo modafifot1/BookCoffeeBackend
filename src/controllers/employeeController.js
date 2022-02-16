@@ -222,7 +222,6 @@ const getEmpployeeById = async (req, res, next) => {
       employee: {
         _id: employee[0]._id,
         email: employee[0].email,
-        role: employee[0].role,
         createAt: employee[0].createAt,
         phoneNumber: employee[0].userDetail[0].phoneNumber,
         fullName: employee[0].userDetail[0].fullName,

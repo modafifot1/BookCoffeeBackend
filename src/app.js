@@ -9,6 +9,9 @@ import {
   tableRoute,
   employeeRoute,
   customerRoute,
+  bookRoute,
+  borrowedBookRoute,
+  profileRoute,
 } from "./routers";
 const { port, connectString } = envVariables;
 const main = async () => {
@@ -24,6 +27,9 @@ const main = async () => {
   server.registerRouter(tableRoute);
   server.registerRouter(employeeRoute);
   server.registerRouter(customerRoute);
+  server.registerRouter(bookRoute);
+  server.registerRouter(borrowedBookRoute);
+  server.registerRouter(profileRoute);
   server.registerMiddleware(errorHandleMiddleware);
 };
 main();

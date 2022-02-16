@@ -318,7 +318,7 @@ const purchase = async (req, res, next) => {
     if (table.status == 1) {
       throw createHttpError(404, "Table is reservered!");
     } else {
-      // await Table.findOneAndUpdate({ tableCode }, { status: 1 });
+      await Table.findOneAndUpdate({ tableCode }, { status: 1 });
     }
     cartItems = cartItems.map((x) => {
       return Mongoose.Types.ObjectId(x);
@@ -483,31 +483,18 @@ const updateStatus = async (req, res, next) => {
     console.log("body: ", req.body);
     const orderId = req.params.orderId;
     const order = await Order.findById(orderId);
+    if (!order) throw createHttpError(400, "Order is not exist!");
     console.log(LOG_TAG, "updateStatus - current status: ", order.statusId);
-    const { statusId } = req.body;
     console.log(LOG_TAG, "updateStatus - update status: ", statusId);
-
-    switch (order.statusId) {
-      case 0:
-        if (user.roleId != 2)
-          throw createHttpError(400, "You are not employee");
-        await confirmOrderStatus(order, res, next);
-        break;
-      case 1:
-        if (user.roleId != 2)
-          throw createHttpError(400, "You are not employee");
-        if (order.statusId < statusId) {
-          await prepareOrderStatus(order, res, next);
-        }
-        break;
-      case 2:
-        if (user.roleId != 2)
-          throw createHttpError(400, "You are not employee!");
-        await completeOrderStatus(order, res, next);
-        break;
-      default:
-        break;
+    let updateData = { statusId: order.statusId + 1 };
+    // if (user.roleId === 1)
+    //   throw createHttpError(400, "You don't have this permision");
+    if (order.status === 1) {
+      await Table.findOneAndUpdate({ id: order.tableCode }, { status: 0 });
+      updateData = { ...updateData, isPaid: true };
     }
+    await Order.findByIdAndUpdate(orderId, updateData);
+
     console.log(LOG_TAG, "updateOrder end!");
   } catch (error) {
     console.log(LOG_TAG, "updateOrder error: ", error);
@@ -653,7 +640,9 @@ const getListOrderByStatus = async (req, res, next) => {
     const user = req.user;
     let orders;
     if (user.roleId == 1) {
+      console.log("roleId: ", user);
       let filter;
+
       if (statusId === -1) {
         filter = {
           customerId: user._id,
@@ -678,7 +667,9 @@ const getListOrderByStatus = async (req, res, next) => {
           numOfItems: x.numOfItems,
         };
       });
-    } else if (statusId == 1) {
+    } else {
+      let filter = {};
+      if (statusId !== -1) filter = { statusId };
       orders = await Order.aggregate([
         {
           $lookup: {
@@ -689,38 +680,29 @@ const getListOrderByStatus = async (req, res, next) => {
           },
         },
         {
-          $match: {
-            statusId: statusId,
-          },
+          $match: filter,
         },
       ]);
-      const orderIds = orders.map((x) => {
-        return x._id;
+      console.log("Orders: ", orders);
+      orders = orders.map((x) => {
+        return {
+          _id: x._id,
+          customerName:
+            x.userDetail[0] != undefined ? x.userDetail[0].fullName : undefined,
+          phoneNumber:
+            x.userDetail[0] != undefined
+              ? x.userDetail[0].phoneNumber
+              : undefined,
+          statusId: x.statusId,
+          paymentMethod: x.paymentMethod,
+          total: x.total,
+          createAt: x.createAt,
+          isPaid: x.isPaid,
+          item: x.item,
+          tableCode: x.tableCode,
+          numOfItems: x.numOfItems,
+        };
       });
-      if (statusId == 2) {
-        orders = orders.map((x) => {
-          const index = orderIds.indexOf(x._id);
-          return {
-            _id: x._id,
-            address: x.address,
-            statusId: x.statusId,
-            paymentMethod: x.paymentMethod,
-            merchandiseSubtotal: x.merchandiseSubtotal,
-            shipmentFee: x.shipmentFee,
-            total: x.total,
-            createAt: x.createAt,
-            isPaid: x.isPaid,
-            customerName:
-              x.userDetail[0] != undefined
-                ? x.userDetail[0].fullName
-                : undefined,
-            phoneNumber:
-              x.userDetail[0] != undefined
-                ? x.userDetail[0].phoneNumber
-                : undefined,
-          };
-        });
-      }
     }
     console.log("orders: ", orders);
     res.status(200).json({

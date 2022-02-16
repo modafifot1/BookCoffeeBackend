@@ -8,6 +8,8 @@ import { Table } from "./TableModel";
 import { OrderItem } from "./OrderItemModel";
 import { Order } from "./OrderModel";
 import { ResetCode } from "./ResetCodeModel";
+import { Book } from "./BookModel";
+import { BorrowedBook } from "./BorrowedBook";
 export {
   Token,
   User,
@@ -20,4 +22,6 @@ export {
   Order,
   OrderItem,
   ResetCode,
+  Book,
+  BorrowedBook,
 };

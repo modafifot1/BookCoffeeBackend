@@ -39,6 +39,9 @@ const feedbackSchema = Schema({
     type: Date,
     default: Date.now,
   },
+  feedBackType: {
+    type: Number,
+  },
   reply: [
     {
       type: replySchema,

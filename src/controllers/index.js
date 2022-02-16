@@ -5,6 +5,9 @@ import { orderController } from "./orderController";
 import { tableController } from "./tableController";
 import { employeeController } from "./employeeController";
 import { customerController } from "./customerController";
+import { bookController } from "./bookController";
+import { borrowedBookController } from "./borrowedBookController";
+import { profileController } from "./profileController";
 export {
   authController,
   foodController,
@@ -13,4 +16,6 @@ export {
   tableController,
   employeeController,
   customerController,
+  bookController,
+  borrowedBookController,
 };
