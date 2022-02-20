@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
 import bcrypt from "bcryptjs";
-import { User, UserDetail } from "../models";
+import { Book, User, UserDetail } from "../models";
 import { jwtToken } from "../utils";
 import { envVariables } from "../configs";
 
@@ -159,6 +159,23 @@ const registerNewCustomer = async (req, res, next) => {
       msg: "Create a new customer successfully!",
       userId: newUser._id,
     });
+    // const csv = require("csvtojson/v2");
+
+    // const data = await csv().fromFile("books.csv");
+    // await Promise.all(
+    //   data.map((item) =>
+    //     Book.create({
+    //       bookId: item.book_id,
+    //       title: item.original_title,
+    //       author: item.authors,
+    //       yearOfPublication: item.original_publication_year,
+    //       rating: item.average_rating,
+    //       imageUrl: item.image_url,
+    //       numOfFeedback: item.ratings_count,
+    //       quantity: 5,
+    //     })
+    //   )
+    // );
   } catch (error) {
     console.log(error);
     next(error);

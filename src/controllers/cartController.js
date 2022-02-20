@@ -202,13 +202,14 @@ const updateCartItem = async (req, res, next) => {
     const { cartId } = req.params;
     const { quantity } = req.body;
     console.log(LOG_TAG, "cartId: ", cartId, ", quantity: ", quantity);
-    const result = await CartItem.findByIdAndUpdate(cartId, { quantity });
-    if (!result) {
+    const book = await CartItem.findByIdAndUpdate(cartId, { quantity });
+    if (!book) {
       throw createHttpError(404, "Not found cart item");
     }
     res.status(200).json({
       status: 200,
       msg: "Update cart item successfully!",
+      book,
     });
     console.log(LOG_TAG, "updateCartItem end!");
   } catch (error) {

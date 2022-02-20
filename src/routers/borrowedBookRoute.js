@@ -8,7 +8,7 @@ const {
   createBorrowedBook,
   updateBorrowedBookById,
 } = borrowedBookController;
-const baseUrl = "/api/v1/books";
+const baseUrl = "/api/v1/borrowedBooks";
 export const borrowedBookRoute = Router();
 borrowedBookRoute.use(baseUrl, authMiddleware);
 borrowedBookRoute

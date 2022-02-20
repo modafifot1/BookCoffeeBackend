@@ -28,6 +28,12 @@ const borrowedBookSchema = new Schema({
       },
     },
   ],
+  numOfItems: {
+    type: Number,
+  },
+  tableCode: {
+    type: Number,
+  },
 });
 export const BorrowedBook = model(
   "BorrowedBook",
