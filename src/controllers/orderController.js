@@ -486,13 +486,18 @@ const updateStatus = async (req, res, next) => {
     if (!order) throw createHttpError(400, "Order is not exist!");
     console.log(LOG_TAG, "updateStatus - current status: ", order.statusId);
     // console.log(LOG_TAG, "updateStatus - update status: ", statusId);
-    let updateData = { statusId: order.statusId + 1, updateAt: new Date() };
-    // if (user.roleId === 1)
-    //   throw createHttpError(400, "You don't have this permision");
-    if (order.status === 1) {
+    if (Number(order.statusId) == 1) {
       await Table.findOneAndUpdate({ id: order.tableCode }, { status: 0 });
       updateData = { ...updateData, isPaid: true };
     }
+    let updateData = {
+      ...updateData,
+      statusId: order.statusId + 1,
+      updateAt: new Date(),
+    };
+    // if (user.roleId === 1)
+    //   throw createHttpError(400, "You don't have this permision");
+
     await Order.findByIdAndUpdate(orderId, updateData);
     res.status(200).json({
       status: 200,
@@ -753,7 +758,8 @@ const momoPayment = async (req, res, next) => {
       bodyData
     );
     console.log("Data: ", data);
-    if (data.status != 0) throw createHttpError(400, data.message);
+    if (data.status != 2132 && data.status != 0)
+      throw createHttpError(400, data.message);
     await Order.findByIdAndUpdate(orderId, {
       isPaid: true,
     });
