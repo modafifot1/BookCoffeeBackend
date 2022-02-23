@@ -8,6 +8,8 @@ import { customerRoute } from "./customerRoute";
 import { bookRoute } from "./bookRoute";
 import { borrowedBookRoute } from "./borrowedBookRoute";
 import { profileRoute } from "./profileRoute";
+import { borowedBookCartRoute } from "./borowedBookCartRoute";
+import { statisticRoute } from "./statisticRoute";
 export {
   authRoute,
   foodRoute,
@@ -19,4 +21,6 @@ export {
   bookRoute,
   borrowedBookRoute,
   profileRoute,
+  borowedBookCartRoute,
+  statisticRoute,
 };

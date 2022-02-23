@@ -4,7 +4,7 @@ import { Book, User, UserDetail } from "../models";
 import { jwtToken } from "../utils";
 import { envVariables } from "../configs";
 
-const { encodeToken } = jwtToken;
+const { encodeToken, destroyToken } = jwtToken;
 const { tokenSecret, tokenLife, refreshTokenLife } = envVariables;
 const LOG_TAG = "authController ";
 /**
@@ -181,4 +181,47 @@ const registerNewCustomer = async (req, res, next) => {
     next(error);
   }
 };
-export const authController = { login, registerNewCustomer };
+const changePassword = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const match = await bcrypt.compare(oldPassword, user.password);
+    if (!match) throw createHttpError(400, "Old password is incorrect!");
+    if (newPassword != confirmPassword)
+      throw createHttpError(
+        400,
+        "New password and confirm password is not match!"
+      );
+    const hashPassword = await bcrypt.hash(newPassword, 12);
+    await User.findByIdAndUpdate(user._id, {
+      password: hashPassword,
+    });
+    res.status(200).json({
+      status: 200,
+      msg: "Change password successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+const logout = async (req, res, next) => {
+  try {
+    console.log(req.user._id);
+    const userId = req.user._id;
+    await destroyToken(userId);
+    res.status(200).json({
+      status: 200,
+      msg: "Logout success!",
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+export const authController = {
+  login,
+  registerNewCustomer,
+  changePassword,
+  logout,
+};

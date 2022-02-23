@@ -8,6 +8,8 @@ import { customerController } from "./customerController";
 import { bookController } from "./bookController";
 import { borrowedBookController } from "./borrowedBookController";
 import { profileController } from "./profileController";
+import { borrowedBookCartController } from "./borrowedBookCartcontroller";
+import { statisticController } from "./statisticController";
 export {
   authController,
   foodController,
@@ -18,4 +20,6 @@ export {
   customerController,
   bookController,
   borrowedBookController,
+  borrowedBookCartController,
+  statisticController,
 };

@@ -4,6 +4,7 @@ import { getHash, getSignatue } from "./encryptData";
 import { distanceBetween2Points, getShipmentFee } from "./shipment";
 import { sendEmail } from "./sendMail";
 import { confirmResetCode, getResetCode } from "./codeConfirm";
+import { dateFunction } from "./dataFunction";
 export {
   jwtToken,
   validateRequest,
@@ -14,4 +15,5 @@ export {
   sendEmail,
   getResetCode,
   confirmResetCode,
+  dateFunction,
 };

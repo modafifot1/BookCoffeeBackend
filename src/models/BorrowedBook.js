@@ -13,6 +13,7 @@ const borrowedBookSchema = new Schema({
   },
   updateAt: {
     type: Date,
+    default: Date.now,
   },
   statusId: {
     type: Number,
@@ -33,6 +34,9 @@ const borrowedBookSchema = new Schema({
   },
   tableCode: {
     type: Number,
+  },
+  orderId: {
+    type: Schema.Types.ObjectId,
   },
 });
 export const BorrowedBook = model(

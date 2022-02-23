@@ -10,6 +10,7 @@ import { Order } from "./OrderModel";
 import { ResetCode } from "./ResetCodeModel";
 import { Book } from "./BookModel";
 import { BorrowedBook } from "./BorrowedBook";
+import { BorrowedBookCartItem } from "./BorrowedBookCartItem";
 export {
   Token,
   User,
@@ -24,4 +25,5 @@ export {
   ResetCode,
   Book,
   BorrowedBook,
+  BorrowedBookCartItem,
 };

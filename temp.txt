@@ -1,0 +1,14 @@
+{
+    "_id": {
+        "$oid": "62124f3d002451bb8f0f062c"
+    },
+    "borrowerName": "Nguyễn Quang Phiêu",
+    "phoneNumber": "0364782449",
+    "statusId": 0,
+    "createAt": "2021-05-20T05:00:13.401Z",
+    "tableCode": 5,
+    "numOfItems": 6,
+    "item": {
+      "imageUrl": "https://images.gr-assets.com/books/1447303603m/2767052.jpg"
+    }
+}

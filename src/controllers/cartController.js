@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
 import Mongoose from "mongoose";
-import { CartItem, Food } from "../models";
+import { BorrowedBookCartItem, CartItem, Food } from "../models";
 const LOG_TAG = "cartController";
 /**
  * @api {get} /api/v1/carts Get cart item
@@ -59,15 +59,16 @@ const getListCartItem = async (req, res, next) => {
     let totalItems = 0;
     cartItems = cartItems.map((x) => {
       totalItems += x.quantity;
-      return {
-        _id: x._id,
-        foodId: x.foodId,
-        quantity: x.quantity,
-        name: x.detail[0].name,
-        unitPrice: x.detail[0].unitPrice,
-        imageUrl: x.detail[0].imageUrl,
-        discountOff: x.detail[0].discountOff,
-      };
+      if (x.detail[0])
+        return {
+          _id: x._id,
+          foodId: x.foodId,
+          quantity: x.quantity,
+          name: x.detail[0].name,
+          unitPrice: x.detail[0].unitPrice,
+          imageUrl: x.detail[0].imageUrl,
+          discountOff: x.detail[0].discountOff,
+        };
     });
     res.status(200).json({
       status: 200,
@@ -202,7 +203,9 @@ const updateCartItem = async (req, res, next) => {
     const { cartId } = req.params;
     const { quantity } = req.body;
     console.log(LOG_TAG, "cartId: ", cartId, ", quantity: ", quantity);
-    const book = await CartItem.findByIdAndUpdate(cartId, { quantity });
+    const book = await BorrowedBookCartItem.findByIdAndUpdate(cartId, {
+      quantity,
+    });
     if (!book) {
       throw createHttpError(404, "Not found cart item");
     }
