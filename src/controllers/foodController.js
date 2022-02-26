@@ -151,7 +151,7 @@ const getFoodById = async (req, res, next) => {
     const foodId = req.params.foodId;
     console.log("FoodId :", foodId);
     let food = await Food.findById(foodId);
-    let feedbacks = await Feedback.find({ foodId }).limit(2);
+    let feedbacks = await Feedback.find({ foodId }).sort({ createAt: -1 });
     feedbacks = feedbacks.map((item) => {
       return {
         _id: item._id,
@@ -160,17 +160,15 @@ const getFoodById = async (req, res, next) => {
         numOfStars: item.numOfStars,
         createAt: item.createAt,
         replies: item.reply,
+        avataUrl: item.avataUrl,
       };
     });
-    food = {
-      ...food._doc,
-      feedbacks,
-    };
     console.log("Food: ", food);
     res.status(200).json({
       status: 200,
       msg: "Get food successfully!",
       food,
+      feedbacks,
     });
     console.log(LOG_TAG, "getFoodById end!");
   } catch (error) {

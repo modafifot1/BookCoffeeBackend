@@ -186,11 +186,11 @@ const changePassword = async (req, res, next) => {
     const user = await User.findById(req.user._id);
     const { oldPassword, newPassword, confirmPassword } = req.body;
     const match = await bcrypt.compare(oldPassword, user.password);
-    if (!match) throw createHttpError(400, "Old password is incorrect!");
+    if (!match) throw createHttpError(400, "Mật khẩu cũ không đúng!");
     if (newPassword != confirmPassword)
       throw createHttpError(
         400,
-        "New password and confirm password is not match!"
+        "Xác nhận mật khẩu không trùng với mật khẩu mới!"
       );
     const hashPassword = await bcrypt.hash(newPassword, 12);
     await User.findByIdAndUpdate(user._id, {
@@ -198,7 +198,7 @@ const changePassword = async (req, res, next) => {
     });
     res.status(200).json({
       status: 200,
-      msg: "Change password successfully",
+      msg: "Đổi mật khẩu thành công",
     });
   } catch (error) {
     console.log(error);

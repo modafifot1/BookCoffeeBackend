@@ -6,7 +6,8 @@ export const errorHandleMiddleware = (server) => {
   });
   server.use((err, req, res, next) => {
     const status = err.status ? err.status : 500;
-    return res.status(status).json({
+    console.log("eror: ", err.message);
+    res.status(status).json({
       msg: err.message,
       status,
     });

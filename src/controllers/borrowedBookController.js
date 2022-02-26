@@ -186,7 +186,15 @@ const updateBorrowedBookById = async (req, res, next) => {
       statusId: borrowedBook.statusId + 1,
       updateAt: new Date(Date.now()),
     });
-
+    const borrowedBookItems = borowedBook.borrowedBookItems;
+    await Promise.all(
+      borrowedBookItems.map((item) =>
+        Book.findOneAndUpdate(
+          { _id: item.bookId },
+          { $inc: { quantity: item.quantity } }
+        )
+      )
+    );
     res.status(200).json({
       status: 2000,
       msg: "Update Borrowed book successfully!",

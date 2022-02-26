@@ -10,6 +10,7 @@ import { borrowedBookController } from "./borrowedBookController";
 import { profileController } from "./profileController";
 import { borrowedBookCartController } from "./borrowedBookCartcontroller";
 import { statisticController } from "./statisticController";
+import { feedbackController } from "./feedbackController";
 export {
   authController,
   foodController,
@@ -22,4 +23,5 @@ export {
   borrowedBookController,
   borrowedBookCartController,
   statisticController,
+  feedbackController,
 };

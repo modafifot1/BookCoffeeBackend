@@ -1,6 +1,7 @@
 import createHttpError from "http-errors";
 import { deleteImage, envVariables, uploadSingle } from "../configs";
-import { Book } from "../models";
+import { Book, Feedback } from "../models";
+import axios from "axios";
 const { numOfPerPage } = envVariables;
 
 const LOG_TAG = "bookController";
@@ -51,7 +52,20 @@ const getBookById = async (req, res, next) => {
     const bookId = req.params.bookId;
     const book = await Book.findOne({ _id: bookId });
     if (!book) throw createHttpError(400, "BoodId is not exist!");
+    let feedbacks = await Feedback.find({ bookId }).sort({ createAt: -1 });
+    feedbacks = feedbacks.map((item) => {
+      return {
+        _id: item._id,
+        userName: item.userName,
+        content: item.content,
+        numOfStars: item.numOfStars,
+        createAt: item.createAt,
+        replies: item.reply,
+        avataUrl: item.avataUrl,
+      };
+    });
     res.status(200).json({
+      feedbacks,
       book,
       msg: "Get book by id successfully!",
       status: 200,
@@ -138,10 +152,64 @@ const deleteBook = async (req, res, next) => {
     next(error);
   }
 };
+const getBookForYou = async (req, res, next) => {
+  try {
+    let bookIds = await Book.aggregate([
+      {
+        $project: { bookId: true, _id: false },
+      },
+      {
+        $match: { bookId: { $lt: 1501 } },
+      },
+    ]);
+    bookIds = bookIds.map((item) => item.bookId);
+    console.log(bookIds);
+    const userId = 7;
+    bookIds = await axios.post(
+      "http://127.0.0.1:5000/api/v1/resources/books",
+      {
+        bookIds,
+        userId,
+      },
+      {
+        headers: {
+          accept: "application/json",
+        },
+      }
+    ); // call flask api ==> selected book;
+    bookIds = JSON.parse(bookIds.data);
+    // let restNumOfBooks = 0;
+    // let restOfBooks = [];
+    // if (bookIds.length < 10) restNumOfBooks = 10 - bookIds.length;
+    // let relatedBooks = await Book.find({
+    //   _id: {
+    //     $in: bookIds,
+    //   },
+    // });
+    // if (restNumOfBooks !== 0) {
+    //   restOfBooks = await Book.find({
+    //     _id: {
+    //       $nin: bookIds,
+    //     },
+    //   }).limit(restNumOfBooks);
+    // }
+    // relatedBooks = [...relatedBooks, ...restOfBooks];
+    let relatedBooks = await Book.find({ bookId: { $in: bookIds } });
+    res.status(200).json({
+      status: 200,
+      msg: "Get related books successfully!",
+      relatedBooks,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 export const bookController = {
   getListBook,
   getBookById,
   createBook,
   updateBookById,
   deleteBook,
+  getBookForYou,
 };

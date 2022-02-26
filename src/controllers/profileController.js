@@ -1,10 +1,15 @@
-import { UserDetail } from "../models";
+import { UserDetail, User } from "../models";
 import { uploadSingle, deleteImage } from "../configs";
 
 const getProfileById = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const profile = await UserDetail.findOne({ userId });
+    let profile = await UserDetail.findOne({ userId });
+    const account = await User.findById(userId);
+    profile = {
+      ...profile._doc,
+      email: account.email,
+    };
     console.log(profile);
 
     res.status(200).json({
@@ -31,7 +36,12 @@ const updateProfileById = async (req, res, next) => {
         address,
       }
     );
-    const profile = await UserDetail.findOne({ userId });
+    let profile = await UserDetail.findOne({ userId });
+    const account = await User.findById(userId);
+    profile = {
+      ...profile._doc,
+      email: account.email,
+    };
     res.status(200).json({
       status: 200,
       msg: "Update profile sucessfully!",
@@ -49,13 +59,16 @@ const updateAvatar = async (req, res, next) => {
     const userDetail = await UserDetail.findOne({ userId });
     const image = await uploadSingle(req.files[0].path);
     const newAvatar = image.url;
-    await UserDetail.findOneAndUpdate(userId, {
-      imageUrl: newAvatar,
-    });
     if (userDetail.imageUrl) {
       const asset_id = userDetail.imageUrl.split("/").pop().split(".")[0];
       await deleteImage(asset_id);
     }
+    await UserDetail.findOneAndUpdate(
+      { userId },
+      {
+        imageUrl: newAvatar,
+      }
+    );
 
     res.status(200).json({
       status: 200,

@@ -15,9 +15,11 @@ const replySchema = Schema({
   },
 });
 const feedbackSchema = Schema({
+  bookId: {
+    type: Schema.Types.ObjectId,
+  },
   foodId: {
     type: Schema.Types.ObjectId,
-    required: true,
   },
   userName: {
     type: String,
@@ -41,6 +43,9 @@ const feedbackSchema = Schema({
   },
   feedBackType: {
     type: Number,
+  },
+  avataUrl: {
+    type: String,
   },
   reply: [
     {

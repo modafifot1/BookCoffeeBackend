@@ -10,6 +10,7 @@ import { borrowedBookRoute } from "./borrowedBookRoute";
 import { profileRoute } from "./profileRoute";
 import { borowedBookCartRoute } from "./borowedBookCartRoute";
 import { statisticRoute } from "./statisticRoute";
+import { feedbackRoute } from "./feedbackRoute";
 export {
   authRoute,
   foodRoute,
@@ -23,4 +24,5 @@ export {
   profileRoute,
   borowedBookCartRoute,
   statisticRoute,
+  feedbackRoute
 };
