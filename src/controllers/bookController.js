@@ -166,7 +166,7 @@ const getBookForYou = async (req, res, next) => {
     console.log(bookIds);
     const userId = 7;
     bookIds = await axios.post(
-      "http://127.0.0.1:5000/api/v1/resources/books",
+      "https://calm-bayou-53727.herokuapp.com/api/v1/resources/books",
       {
         bookIds,
         userId,
