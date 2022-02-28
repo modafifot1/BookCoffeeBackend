@@ -4,6 +4,7 @@ import {
   // validatePermission,
   authMiddleware,
   // validateRequestBody,
+  isAdminRole,
 } from "../middlewares";
 const baseUrl = "/api/v1/employees";
 const {
@@ -18,7 +19,7 @@ const {
 // const { isAdminRole } = validatePermission;
 
 export const employeeRoute = Router();
-employeeRoute.use(`${baseUrl}`, authMiddleware);
+employeeRoute.use(`${baseUrl}`, authMiddleware, isAdminRole);
 // employeeRoute.use(`${baseUrl}`, isAdminRole);
 //--------------------Managing employees---------------------------//
 employeeRoute.route(`${baseUrl}`).get(getListEmployees);

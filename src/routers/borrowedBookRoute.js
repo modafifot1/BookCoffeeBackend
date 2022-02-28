@@ -1,6 +1,6 @@
 import { borrowedBookController } from "../controllers";
 import { Router } from "express";
-import { authMiddleware } from "../middlewares";
+import { authMiddleware, isAdminAndEmployee } from "../middlewares";
 
 const {
   getListBorrowedBookByStatus,
@@ -18,4 +18,4 @@ borrowedBookRoute.route(`${baseUrl}/:borrowedBookId`).get(getBorrowedBookById);
 borrowedBookRoute.route(baseUrl).post(createBorrowedBook);
 borrowedBookRoute
   .route(`${baseUrl}/:borrowedBookId`)
-  .put(updateBorrowedBookById);
+  .put(isAdminAndEmployee, updateBorrowedBookById);

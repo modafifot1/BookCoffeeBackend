@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authMiddleware, validateBodyData } from "../middlewares";
+import { authMiddleware, validateBodyData, isAdminAndEmployee } from "../middlewares";
 import { orderController } from "../controllers";
 const {
   getListOrder,
@@ -26,7 +26,7 @@ orderRoute.route(`${baseUrl}/:orderId`).get(authMiddleware, getOrderById);
 orderRoute.route(`${baseUrl}/:orderId`).delete(authMiddleware, cancelOrderById);
 orderRoute
   .route(`${baseUrl}/:orderId/statuses`)
-  .put(authMiddleware, updateStatus);
+  .put(authMiddleware,isAdminAndEmployee, updateStatus);
 orderRoute
   .route(`${baseUrl}/statuses/:statusId`)
   .get(authMiddleware, getListOrderByStatus);

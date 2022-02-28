@@ -28,3 +28,31 @@ export const authMiddleware = async (req, res, next) => {
     next(error);
   }
 };
+export const isAdminRole = async (req, res, next) => {
+  try {
+    if (req.user._id !== 0)
+      throw createHttpError(400, "Bạn không phải là admin");
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+export const isEmployeeRole = async (req, res, next) => {
+  try {
+    if (req.user._id !== 2)
+      throw createHttpError(400, "Bạn không phải là nhân viên");
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const isAdminAndEmployee = async (req, res, next) => {
+  try {
+    if (req.user._id !== 2 && req.user._id !== 0)
+      throw createHttpError(400, "Bạn không phải là nhân viên hay admin");
+    next();
+  } catch (error) {
+    next(error);
+  }
+};

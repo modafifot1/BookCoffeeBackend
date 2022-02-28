@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { foodController } from "../controllers";
-import { authMiddleware } from "../middlewares";
+import {
+  authMiddleware,
+  isAdminAndEmployee,
+  isAdminRole,
+} from "../middlewares";
 import { validateBodyData } from "../middlewares";
 
 const { validateNewFoodData } = validateBodyData;
@@ -17,8 +21,12 @@ const baseUrl = "/api/v1/foods";
 export const foodRoute = Router();
 foodRoute.use(`${baseUrl}`, authMiddleware);
 foodRoute.route(`${baseUrl}?`).get(getListFoodPerPage);
-foodRoute.route(`${baseUrl}`).post(validateNewFoodData, createNewFood);
+foodRoute
+  .route(`${baseUrl}`)
+  .post(isAdminAndEmployee, validateNewFoodData, createNewFood);
 foodRoute.route(`${baseUrl}/:foodId`).get(getFoodById);
-foodRoute.route(`${baseUrl}/:foodId`).put(updateFoodById);
-foodRoute.route(`${baseUrl}/:foodId`).delete(deleteFoodById);
-foodRoute.route(`${baseUrl}/:foodId`).post(confirmFood);
+foodRoute.route(`${baseUrl}/:foodId`).put(isAdminAndEmployee, updateFoodById);
+foodRoute
+  .route(`${baseUrl}/:foodId`)
+  .delete(isAdminAndEmployee, deleteFoodById);
+foodRoute.route(`${baseUrl}/:foodId`).post(isAdminRole, confirmFood);
