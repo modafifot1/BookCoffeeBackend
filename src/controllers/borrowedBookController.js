@@ -186,7 +186,7 @@ const updateBorrowedBookById = async (req, res, next) => {
       statusId: borrowedBook.statusId + 1,
       updateAt: new Date(Date.now()),
     });
-    const borrowedBookItems = borowedBook.borrowedBookItems;
+    const borrowedBookItems = borrowedBook.borrowedBookItems;
     await Promise.all(
       borrowedBookItems.map((item) =>
         Book.findOneAndUpdate(
