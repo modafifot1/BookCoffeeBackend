@@ -490,7 +490,7 @@ const updateStatus = async (req, res, next) => {
       await Table.findOneAndUpdate({ id: order.tableCode }, { status: 0 });
       updateData = { ...updateData, isPaid: true };
     }
-    let updateData = {
+    var updateData = {
       ...updateData,
       statusId: order.statusId + 1,
       updateAt: new Date(),
