@@ -7,7 +7,7 @@ const borrowedBookSchema = new Schema({
   borrowerName: {
     type: String,
   },
-  craeteAt: {
+  createAt: {
     type: Date,
     default: Date.now,
   },
@@ -37,6 +37,12 @@ const borrowedBookSchema = new Schema({
   },
   orderId: {
     type: Schema.Types.ObjectId,
+  },
+  phoneNumber: {
+    type: String,
+  },
+  item: {
+    type: Object,
   },
 });
 export const BorrowedBook = model(

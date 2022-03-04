@@ -156,12 +156,16 @@ const createBorrowedBook = async (req, res, next) => {
         BorrowedBookCartItem.deleteOne({ _id: borrowedBookItems[i]._id }),
       ]);
     }
+    console.log("Borrower detail: ", borrowerDetail);
     const borowedBook = await BorrowedBook.create({
       borrowerId,
       borrowerName: borrowerDetail.fullName,
       borrowedBookItems,
       tableCode: order.tableCode,
       orderId: order._id,
+      numOfItems: borrowedBookItems.length,
+      phoneNumber: borrowerDetail.phoneNumber,
+      item: books[0],
     });
     res.status(201).json({
       status: 201,
