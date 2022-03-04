@@ -662,7 +662,7 @@ const getListOrderByStatus = async (req, res, next) => {
           statusId,
         };
       }
-      orders = await Order.find(filter).sort({ createAt: 0 });
+      orders = await Order.find(filter).sort({ createAt: -1 });
       orders = orders.map((x, index) => {
         return {
           _id: x._id,
@@ -690,6 +690,11 @@ const getListOrderByStatus = async (req, res, next) => {
         },
         {
           $match: filter,
+        },
+        {
+          $sort: {
+            createAt: -1,
+          },
         },
       ]);
       console.log("Orders: ", orders);

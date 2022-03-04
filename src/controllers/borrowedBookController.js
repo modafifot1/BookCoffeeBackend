@@ -21,7 +21,7 @@ const getListBorrowedBookByStatus = async (req, res, next) => {
     if (user.roleId === 1) {
       if (status != -1) filter = { ...filter, statusId: status };
       filter = { ...filter, borrowerId: req.user._id };
-      borrowedBooks = await BorrowedBook.find(filter);
+      borrowedBooks = await BorrowedBook.find(filter).sort({ createAt: -1 });
       let books = await Promise.all(
         borrowedBooks.map((item) =>
           Book.findOne({ _id: item.borrowedBookItems[0].bookId })
@@ -48,7 +48,7 @@ const getListBorrowedBookByStatus = async (req, res, next) => {
       borrowedBooks = await BorrowedBook.find(filter)
         .skip(start)
         .limit(numOfPerPage)
-        .sort({ [orderBy]: orderType });
+        .sort({ [orderBy]: orderType, createAt: -1 });
     }
 
     res.status(200).json({
@@ -88,7 +88,7 @@ const getBorrowedBookById = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       msg: "Get borrowed book by id successfully!",
-      craeteAt: borrowedBook.craeteAt,
+      createAt: borrowedBook.createAt,
       statusId: borrowedBook.statusId,
       tableCode: borrowedBook.tableCode,
       updateAt: borrowedBook.updateAt,
