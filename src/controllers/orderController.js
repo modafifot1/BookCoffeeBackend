@@ -487,7 +487,10 @@ const updateStatus = async (req, res, next) => {
     console.log(LOG_TAG, "updateStatus - current status: ", order.statusId);
     // console.log(LOG_TAG, "updateStatus - update status: ", statusId);
     if (Number(order.statusId) == 1) {
-      await Table.findOneAndUpdate({ id: order.tableCode }, { status: 0 });
+      await Table.findOneAndUpdate(
+        { tableCode: order.tableCode },
+        { status: 0 }
+      );
       updateData = { ...updateData, isPaid: true };
     }
     var updateData = {
