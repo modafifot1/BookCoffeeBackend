@@ -84,8 +84,8 @@ const getRevenuesInfo = async (req, res, next) => {
         year = Number(year);
         const months = getMonthsByquater(quater);
 
-        startDate = new Date(year, months[0] - 1, 1);
-        endDate = new Date(year, months[2] - 1, 0);
+        startDate = new Date(year, months[0], 1);
+        endDate = new Date(year, months[2], 0);
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(23, 59, 59, 999);
         console.log("StartDate: ", startDate);
