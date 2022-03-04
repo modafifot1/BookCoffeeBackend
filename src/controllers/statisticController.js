@@ -99,7 +99,7 @@ const getRevenuesInfo = async (req, res, next) => {
         });
         orders = orders.map((x) => {
           return {
-            month: new Date(x.updateAt).getMonth() + 1,
+            month: new Date(x.updateAt).getMonth(),
             revenue: x.total,
           };
         });
