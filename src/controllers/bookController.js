@@ -9,13 +9,14 @@ const getListBook = async (req, res, next) => {
   try {
     console.log(LOG_TAG, "getListBook begin!");
     let { searchText, searchBy, orderBy, orderType, page } = req.query;
+    console.log("page: ", page);
     let filter = {};
     searchBy = searchBy || "title";
     orderBy = orderBy || "rating";
     orderType = orderType || 1;
     page = page || 1;
     var regex = new RegExp([searchText].join(""), "i");
-    if (searchText)
+    if (searchText !== "undefined")
       filter = {
         [searchBy]:
           searchBy === "yearOfPublication"
@@ -35,7 +36,7 @@ const getListBook = async (req, res, next) => {
       .sort({ [orderBy]: orderType });
     res.status(200).json({
       status: 200,
-      msg: "Get list book successfully!",
+      msg: "Lấy danh sách sách thành công!",
       books,
       totalPage,
       page,
@@ -51,7 +52,7 @@ const getBookById = async (req, res, next) => {
   try {
     const bookId = req.params.bookId;
     const book = await Book.findOne({ _id: bookId });
-    if (!book) throw createHttpError(400, "BoodId is not exist!");
+    if (!book) throw createHttpError(400, "Sách không tồn tại");
     let feedbacks = await Feedback.find({ bookId }).sort({ createAt: -1 });
     feedbacks = feedbacks.map((item) => {
       return {
@@ -67,7 +68,7 @@ const getBookById = async (req, res, next) => {
     res.status(200).json({
       feedbacks,
       book,
-      msg: "Get book by id successfully!",
+      msg: "Lấy chi tiết sách thành công!",
       status: 200,
     });
   } catch (error) {
@@ -93,7 +94,7 @@ const createBook = async (req, res, next) => {
     });
 
     res.status(201).json({
-      msg: "create new book successfully",
+      msg: "Thêm sách thành công",
       status: 201,
       book: newBook,
     });
@@ -128,7 +129,7 @@ const updateBookById = async (req, res, next) => {
       }
     );
     res.status(200).json({
-      msg: "update book successfully!",
+      msg: "Cập nhật sách thành công!",
       status: 200,
       book: { _id: book._id, title, author, yearOfPublication, quantity },
     });
@@ -142,10 +143,10 @@ const deleteBook = async (req, res, next) => {
   try {
     const bookId = req.params.bookId;
     const deleteBook = await Book.findByIdAndDelete(bookId);
-    if (!deleteBook) throw createHttpError(404, "Not found book!");
+    if (!deleteBook) throw createHttpError(404, "Không tìm thấy sách cần xóa!");
     res.status(200).json({
       status: 200,
-      msg: "Delete book successfully!",
+      msg: "Xóa sách thành công!",
       bookId,
     });
   } catch (error) {

@@ -70,7 +70,7 @@ const getListOrder = async (req, res, next) => {
     });
     res.status(200).json({
       status: 200,
-      msg: "Get list order sucessfully!",
+      msg: "Lấy danh sách đơn hàng thành công!",
       orders,
     });
   } catch (error) {
@@ -184,7 +184,7 @@ const getOrderById = async (req, res, next) => {
 
     res.status(200).json({
       status: 200,
-      msg: "Get order successfully!",
+      msg: "Lấy chi tiết đơn hàng thành công!",
       _id: order[0]._id,
       total: order[0].total,
       createAt: order[0].createAt,
@@ -237,7 +237,7 @@ const order = async (req, res, next) => {
     const table = await Table.find({ tableCode, status: 1 });
     console.log("table: ", !table);
     if (!tableCode || table.length) {
-      throw createHttpError(404, "Please selected table!");
+      throw createHttpError(404, "Vui lòng chọn bàn!");
     }
     cartItems = cartItems.map((x) => {
       return Mongoose.Types.ObjectId(x);
@@ -272,7 +272,7 @@ const order = async (req, res, next) => {
     }, 0);
     res.status(200).json({
       status: 200,
-      msg: "Order successfully!",
+      msg: "Đặt hàng thành công!",
       total,
       tableCode,
     });
@@ -316,7 +316,7 @@ const purchase = async (req, res, next) => {
     let { cartItems, paymentMethod, tableCode, total } = req.body;
     const table = await Table.findOne({ tableCode });
     if (table.status == 1) {
-      throw createHttpError(404, "Table is reservered!");
+      throw createHttpError(404, "Bàn đã được đặt trước!");
     } else {
       await Table.findOneAndUpdate({ tableCode }, { status: 1 });
     }
@@ -370,7 +370,7 @@ const purchase = async (req, res, next) => {
     const io = MySocket.prototype.getInstance();
     res.status(201).json({
       status: 201,
-      msg: "Purchase successfully!",
+      msg: "Thanh toán thành công!",
       orderId: newOrder._id,
       createAt: newOrder.createAt,
       total,
@@ -483,7 +483,7 @@ const updateStatus = async (req, res, next) => {
     console.log("body: ", req.body);
     const orderId = req.params.orderId;
     const order = await Order.findById(orderId);
-    if (!order) throw createHttpError(400, "Order is not exist!");
+    if (!order) throw createHttpError(400, "Đơn hàng không tồn tại!");
     console.log(LOG_TAG, "updateStatus - current status: ", order.statusId);
     // console.log(LOG_TAG, "updateStatus - update status: ", statusId);
     if (Number(order.statusId) == 1) {
@@ -504,7 +504,7 @@ const updateStatus = async (req, res, next) => {
     await Order.findByIdAndUpdate(orderId, updateData);
     res.status(200).json({
       status: 200,
-      msg: "Update status order successfully!",
+      msg: "Cạp nhật đơn hàng thành công!",
       orderId,
     });
     console.log(LOG_TAG, "updateOrder end!");
@@ -520,7 +520,7 @@ const confirmOrderStatus = async (order, res, next) => {
     });
     res.status(200).json({
       status: 200,
-      msg: "Confirm successfully!",
+      msg: "Xác nhận đơn thành công!",
     });
   } catch (error) {
     console.log(error);
@@ -534,7 +534,7 @@ const prepareOrderStatus = async (order, res, next) => {
     });
     res.status(200).json({
       status: 200,
-      msg: "Prepare successfully!",
+      msg: "Chuẩn bị đơn hàng thành công!",
     });
   } catch (error) {
     console.log(error);
@@ -551,7 +551,7 @@ const completepaidOrderStatus = async (order, res, next) => {
     io.emit("UpdateOrderStatus", 3);
     res.status(200).json({
       status: 200,
-      msg: "Pay for order successfully!",
+      msg: "Thanh toán đơn hàng thành công!",
     });
   } catch (error) {
     console.log(error);
@@ -724,7 +724,7 @@ const getListOrderByStatus = async (req, res, next) => {
     console.log("orders: ", orders);
     res.status(200).json({
       status: 200,
-      msg: "Get list order by status sucessfully!",
+      msg: "Lấy danh sách đơn hàng thành công!",
       orders,
     });
   } catch (error) {
@@ -774,7 +774,7 @@ const momoPayment = async (req, res, next) => {
     console.log("Orders: ", await Order.findById(orderId));
     res.status(200).json({
       status: 200,
-      msg: "Successful transaction!",
+      msg: "Thanh toán momo thành công!",
     });
   } catch (error) {
     console.log(error);

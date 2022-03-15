@@ -42,19 +42,20 @@ const getListFoodPerPage = async (req, res, next) => {
   console.log(LOG_TAG, "getListFoodPerPage begin!");
   try {
     let { page, searchText, foodType, orderBy, orderType } = req.query;
+    console.log("TRue or false: ", searchText !== "undefined");
     console.log(
       "Query param before: ",
-      `page= ${page}, textSearch= ${searchText}, foodType= ${foodType}, orderBy= ${orderBy}, orderType= ${orderType}`
+      `page= ${page}, searchText= ${searchText}, foodType= ${foodType}, orderBy= ${orderBy}, orderType= ${orderType}`
     );
     page = page ? page : 1;
-    searchText = searchText ? searchText : "";
+    searchText = searchText !== "undefined" ? searchText : "";
     foodType = foodType ? foodType : true;
     orderBy = orderBy ? orderBy : "";
     orderType = orderType ? orderType : 1;
     const orderQuery = orderBy ? { [orderBy]: orderType } : {};
     console.log(
       "Query param after: ",
-      `page= ${page}, textSearch= ${searchText}, foodType= ${foodType}, orderBy= ${orderBy}, orderType= ${orderType}`
+      `page= ${page}, searchText= ${searchText}, foodType= ${foodType}, orderBy= ${orderBy}, orderType= ${orderType}`
     );
 
     const start = (page - 1) * numOfPerPage;
@@ -89,7 +90,7 @@ const getListFoodPerPage = async (req, res, next) => {
     console.log("Total food list: ", foods.length);
     res.status(200).json({
       status: 200,
-      msg: "Get foods successfully!",
+      msg: "Lấy danh sách sản phẩm thành công!",
       foods,
       totalPage,
     });
@@ -166,7 +167,7 @@ const getFoodById = async (req, res, next) => {
     console.log("Food: ", food);
     res.status(200).json({
       status: 200,
-      msg: "Get food successfully!",
+      msg: "Xem chi tiết sản phẩm thành công!",
       food,
       feedbacks,
     });
@@ -225,7 +226,7 @@ const createNewFood = async (req, res, next) => {
     // await io.emit("ListProduct", "Get list products");
     res.status(201).json({
       status: 201,
-      msg: "Create new food successfully!",
+      msg: "Tạo sản phẩm mới thành công!",
       newFood,
     });
     console.log(LOG_TAG, "createNewFood end!");
@@ -270,7 +271,7 @@ const updateFoodById = async (req, res, next) => {
     console.log("update foodId: ");
     const existedFood = await Food.findById(foodId);
     if (!existedFood) {
-      throw createHttpError(404, "food id not exist!");
+      throw createHttpError(404, "Sản phẩm không tồn tại!");
     }
     let imageUrl = req.body.imageUrl;
     if (req.files) {
@@ -292,7 +293,7 @@ const updateFoodById = async (req, res, next) => {
     const newFood = await Food.findById(foodId);
     res.status(200).json({
       status: 200,
-      msg: "Update food successfully!",
+      msg: "Cập nhật thông tin sản phẩm thành công!",
       food: newFood,
     });
 
@@ -330,12 +331,12 @@ const deleteFoodById = async (req, res, next) => {
     const foodId = req.params.foodId;
     const existedFood = await Food.findById(foodId);
     if (!existedFood) {
-      throw createHttpError(404, "Food is not found");
+      throw createHttpError(404, "Sản phẩm không tồn tại");
     }
     await Food.findByIdAndRemove(foodId);
     res.status(200).json({
       status: 200,
-      msg: "Delete food successfully!",
+      msg: "Xóa sản phẩm thàng công!",
       deleteFoodId: foodId,
     });
   } catch (error) {
@@ -372,10 +373,10 @@ const confirmFood = async (req, res, next) => {
     const food = await Food.findByIdAndUpdate(foodId, {
       confirmed: true,
     });
-    if (!food) throw createHttpError(400, "Not found food by foodId!");
+    if (!food) throw createHttpError(400, "Không tìm thấy sản phẩm!");
     res.status(200).json({
       status: 200,
-      msg: "Confirm food successfully!",
+      msg: "Xác thực thành công!",
     });
   } catch (error) {
     console.log(error);

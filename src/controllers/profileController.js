@@ -14,7 +14,7 @@ const getProfileById = async (req, res, next) => {
 
     res.status(200).json({
       status: 200,
-      msg: "Get profile successfully!",
+      msg: "Lấy thông tin cá nhân thành công!",
       profile,
     });
   } catch (error) {
@@ -44,7 +44,7 @@ const updateProfileById = async (req, res, next) => {
     };
     res.status(200).json({
       status: 200,
-      msg: "Update profile sucessfully!",
+      msg: "Cập nhật thông tin cá nhân thành công!",
       profile,
     });
   } catch (error) {
@@ -72,7 +72,7 @@ const updateAvatar = async (req, res, next) => {
 
     res.status(200).json({
       status: 200,
-      msg: "Update avatar successfully!",
+      msg: "Cập nhật avatar thành công!",
       newAvatar,
     });
   } catch (error) {

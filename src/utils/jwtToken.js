@@ -19,11 +19,11 @@ const verifyToken = async (token, tokenSecret) => {
     data = jwt.verify(token, tokenSecret);
   } catch (error) {
     await Token.findOneAndDelete({ token });
-    throw createHttpError(401, "Token expired");
+    throw createHttpError(401, "Token bị hết hạn");
   }
   const existedToken = await Token.findOne({ token });
   if (!existedToken) {
-    throw createHttpError(400, "Token is not exists!");
+    throw createHttpError(400, "Token không tồn tại!");
   }
   return data;
 };

@@ -65,7 +65,7 @@ const addOneBookToCart = async (userId, bookId, quantity) => {
       });
     }
   } catch (error) {
-    throw createHttpError(400, "Cannot add book to cart");
+    throw createHttpError(400, "Không thể thêm sách vào giỏ");
   }
 };
 
@@ -85,7 +85,7 @@ const addBookToCart = async (req, res, next) => {
 
     res.status(201).json({
       status: 201,
-      msg: "Add book cart item successfully!",
+      msg: "Thêm sách vào giỏ thành công!",
       numOfAddedItems: total,
     });
   } catch (error) {
@@ -102,13 +102,13 @@ const updateBorrowedBookCartItemById = async (req, res, next) => {
       borowedBookCartItemId
     );
     if (!borowedBookCartItem) {
-      throw createHttpError(404, "Not found book cart item");
+      throw createHttpError(404, "Không tìm thấy sách");
     }
     await BorrowedBookCartItem.findByIdAndUpdate(borowedBookCartItemId, {
       quantity,
     });
     res.status(200).json({
-      msg: "Update quantity book cart item successfully!",
+      msg: "Cập nhật số lượng thành công!",
       status: 200,
     });
   } catch (error) {
@@ -126,10 +126,10 @@ const deleteBorrowedBookCartItemById = async (req, res, next) => {
       },
     });
     if (cartItem.length == 0) {
-      throw createHttpError(400, "Cannot delete book cart item!");
+      throw createHttpError(400, "Không thể xóa sách khỏi giỏ!");
     }
     res.status(200).json({
-      msg: "Delete book cart item successfully!",
+      msg: "Xóa sách khỏi giỏ thành công!",
       status: 200,
       borrowedBookCartItems,
     });

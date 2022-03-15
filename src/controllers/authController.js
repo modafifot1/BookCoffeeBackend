@@ -47,11 +47,11 @@ const login = async (req, res, next) => {
     console.log(LOG_TAG, "login: body data: " + email + ", " + password);
     const existedUser = await User.findOne({ email });
     if (!existedUser) {
-      throw createHttpError(400, "Email isn't exist!");
+      throw createHttpError(400, "Địa chỉ email không tồn tại");
     }
     const matchPass = await bcrypt.compare(password, existedUser.password);
     if (!matchPass) {
-      throw createHttpError(400, "Password is not correct!");
+      throw createHttpError(400, "Mật khẩu không đúng!");
     }
     const tokenData = {
       _id: existedUser._id,
@@ -71,7 +71,7 @@ const login = async (req, res, next) => {
     ]);
     res.status(200).json({
       status: 200,
-      msg: "success!",
+      msg: "Đăng nhập thành công!",
       roleId: existedUser.roleId,
       token,
       refreshToken,
@@ -137,7 +137,7 @@ const registerNewCustomer = async (req, res, next) => {
     const userExisted = await User.findOne({ email });
     console.log("ExistedEmail: ", userExisted, fullName);
     if (userExisted) {
-      throw createHttpError(400, "This email is used by others!");
+      throw createHttpError(400, "Địa chỉ email đã được sử dụng!");
       return;
     }
     const hashPassword = await bcrypt.hash(password, 12);
@@ -156,7 +156,7 @@ const registerNewCustomer = async (req, res, next) => {
     });
     res.status(201).json({
       status: 201,
-      msg: "Create a new customer successfully!",
+      msg: "Đăng ký thành công!",
       userId: newUser._id,
     });
     // const csv = require("csvtojson/v2");

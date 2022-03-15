@@ -87,7 +87,7 @@ const getListCustomer = async (req, res, next) => {
     console.log(listcustomers);
     res.status(200).json({
       status: 200,
-      msg: "Get list customer successfully!",
+      msg: "Lấy danh sách người dùng thành công!",
       customers: listcustomers,
     });
     console.log(LOG_TAG, "getListcustomer end!");
@@ -151,11 +151,11 @@ const getCustomerById = async (req, res, next) => {
       },
     ]);
     if (!customer) {
-      throw createHttpError(400, "customerId is not exist!");
+      throw createHttpError(400, "Khách hàng không tồn tại!");
     }
     res.status(200).json({
       status: 200,
-      msg: "Get an customer successfully!",
+      msg: "Lấy chi tiết thông tin khách hàng thành công!",
       customer: {
         _id: customer[0]._id,
         email: customer[0].email,
@@ -202,13 +202,13 @@ const updateCustomerStatus = async (req, res, next) => {
     const customer = await User.findById(customerId);
 
     if (!customer || customer.roleId !== 1)
-      throw createHttpError(404, "Customer is not exists!");
+      throw createHttpError(404, "Khách hàng không tồn tại!");
     await User.findByIdAndUpdate(customerId, {
       isBlocked: !(customer.isBlocked || false),
     });
     res.status(200).json({
       status: 200,
-      msg: "Update customer status successfully!",
+      msg: "Khóa khách hàng thành công!",
       customerId,
     });
     console.log(LOG_TAG, "updateCustomerStatus End!");

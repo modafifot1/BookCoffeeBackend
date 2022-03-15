@@ -1,7 +1,7 @@
 import { jwtToken } from "../utils";
 import createHttpError from "http-errors";
 import { envVariables } from "../configs";
-
+import { User } from "../models";
 const { tokenSecret } = envVariables;
 const { encodeToken, verifyToken } = jwtToken;
 const LOG_TAG = "authMiddleware ";
@@ -12,11 +12,14 @@ export const authMiddleware = async (req, res, next) => {
       !req.headers.authorization ||
       !req.headers.authorization.startsWith("Bearer")
     ) {
-      throw createHttpError(403, "no token, authorization is denied!");
+      throw createHttpError(403, "Vui lòng đăng nhập để tiếp tục sử dụng");
     }
     try {
       const token = req.headers.authorization.split(" ")[1];
       const userData = await verifyToken(token, tokenSecret);
+      const user = await User.findById(userData._id);
+      if (user.isBlocked === true)
+        throw createHttpError(400, "Tài khoản đã bị khóa");
       req.user = userData;
       next();
     } catch (error) {

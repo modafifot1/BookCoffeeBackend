@@ -86,7 +86,7 @@ const getListEmployees = async (req, res, next) => {
     console.log(listEmployees);
     res.status(200).json({
       status: 200,
-      msg: "Get list employee successfully!",
+      msg: "Lấy danh sách nhân viên thành công!",
       employees: listEmployees,
     });
   } catch (error) {
@@ -129,7 +129,7 @@ const createNewEmployee = async (req, res, next) => {
     const userExisted = await User.findOne({ email });
     console.log("ExistedEmail: ", userExisted, fullName);
     if (userExisted) {
-      throw createHttpError(400, "This email is used by others!");
+      throw createHttpError(400, "Địa chỉ email đã được sử dụng!");
       return;
     }
     const hashPassword = await bcrypt.hash(password, 12);
@@ -155,7 +155,7 @@ const createNewEmployee = async (req, res, next) => {
     );
     res.status(201).json({
       status: 201,
-      msg: "Create a new employee successfully!",
+      msg: "Tạo nhân viên mới thành công!",
       userId: newUser._id,
     });
   } catch (error) {
@@ -214,11 +214,11 @@ const getEmpployeeById = async (req, res, next) => {
       },
     ]);
     if (!employee) {
-      throw createHttpError(400, "employeeId is not exist!");
+      throw createHttpError(400, "Nhân viên không tồn tại!");
     }
     res.status(200).json({
       status: 200,
-      msg: "Get an employee successfully!",
+      msg: "Lấy chi tiết thông tin nhân viên thành công!",
       employee: {
         _id: employee[0]._id,
         email: employee[0].email,
@@ -277,7 +277,7 @@ const updateEmployeeById = async (req, res, next) => {
     );
     res.status(200).json({
       status: 200,
-      msg: "Update an employee successfully!",
+      msg: "Cập nhật thông tin nhân viên thành công!",
     });
   } catch (error) {
     console.log(error);
@@ -318,12 +318,12 @@ const deleteEmployeeById = async (req, res, next) => {
         UserDetail.findOneAndDelete({ userId: employeeIds[i] }),
       ]);
       if (!employee) {
-        throw createHttpError(400, "An employee is not exist!");
+        throw createHttpError(400, "Nhân viên không tồn tại!");
       }
     }
     res.status(200).json({
       status: 200,
-      msg: "Delete an employee successfully!",
+      msg: "Xóa nhân viên thành công!",
       employeeIds,
     });
   } catch (error) {

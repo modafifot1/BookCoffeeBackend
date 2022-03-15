@@ -142,12 +142,12 @@ const getRevenuesInfo = async (req, res, next) => {
         console.log(revenues);
         break;
       default:
-        throw createHttpError(400, "Not found getInfoBy");
+        throw createHttpError(400, "Vui long truyền thông tin cần thống kê");
     }
     console.log(revenues);
     res.status(200).json({
       status: 200,
-      msg: "Get revenues successfully!",
+      msg: "Lấy thông tin thống kê thành công!",
       revenues,
     });
   } catch (error) {
@@ -177,16 +177,17 @@ const getGeneralInfo = async (req, res, next) => {
       },
     ]);
 
-    if (popularFoodIds.length > 20)
-      popularFoodIds = popularFoodIds.slice(0, 20);
+    if (popularFoodIds.length > 10)
+      popularFoodIds = popularFoodIds.slice(0, 10);
     let popularFoods = await Promise.all(
       popularFoodIds.map((item) => Food.findById(item._id))
     );
     popularFoods = popularFoods.map((item, index) => {
-      return {
-        ...item._doc,
-        amountOfBuy: popularFoodIds[index].count,
-      };
+      if (item)
+        return {
+          ...item._doc,
+          amountOfBuy: popularFoodIds[index].count,
+        };
     });
 
     let popularBorrowedBookIds = await BorrowedBook.aggregate([
@@ -205,8 +206,8 @@ const getGeneralInfo = async (req, res, next) => {
       },
     ]);
 
-    if (popularBorrowedBookIds.length > 20)
-      popularBorrowedBookIds = popularBorrowedBookIds.slice(0, 20);
+    if (popularBorrowedBookIds.length > 10)
+      popularBorrowedBookIds = popularBorrowedBookIds.slice(0, 10);
     let popularBorrowedBooks = await Promise.all(
       popularBorrowedBookIds.map((item) => Book.findById(item._id))
     );

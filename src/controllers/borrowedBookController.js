@@ -52,7 +52,7 @@ const getListBorrowedBookByStatus = async (req, res, next) => {
     }
 
     res.status(200).json({
-      msg: "Get list borrowed book successfully!",
+      msg: "Lấy danh sách sách mượn thành công!",
       status: 200,
       borrowedBooks,
       totalBorrowedBooks,
@@ -70,7 +70,7 @@ const getBorrowedBookById = async (req, res, next) => {
     const borrowedBookId = req.params.borrowedBookId;
     const borrowedBook = await BorrowedBook.findOne({ _id: borrowedBookId });
     if (!borrowedBook)
-      throw createHttpError(400, "Get borrowed book by id successfully!");
+      throw createHttpError(400, "Lấy danh sách sách mượn của người dùng không thành công!");
 
     let borrowedBookItems = await Promise.all(
       borrowedBook.borrowedBookItems.map((item) =>
@@ -87,7 +87,7 @@ const getBorrowedBookById = async (req, res, next) => {
 
     res.status(200).json({
       status: 200,
-      msg: "Get borrowed book by id successfully!",
+      msg: "Lấy danh sách sách mượn của người dùng thành công!",
       createAt: borrowedBook.createAt,
       statusId: borrowedBook.statusId,
       tableCode: borrowedBook.tableCode,
@@ -169,7 +169,7 @@ const createBorrowedBook = async (req, res, next) => {
     });
     res.status(201).json({
       status: 201,
-      msg: "Create new borrowed book successfully!",
+      msg: "Thêm sách mượn thành công!",
       borowedBook,
     });
     console.log(LOG_TAG, "createBorrowedBook end!");
@@ -185,7 +185,7 @@ const updateBorrowedBookById = async (req, res, next) => {
     const borrowedBookId = req.params.borrowedBookId;
     const borrowedBook = await BorrowedBook.findOne({ _id: borrowedBookId });
     if (!borrowedBook)
-      throw createHttpError(400, "Borrowed Book is not exist!");
+      throw createHttpError(400, "Danh sách sách mượn không tồn tại!");
     await BorrowedBook.findByIdAndUpdate(borrowedBookId, {
       statusId: borrowedBook.statusId + 1,
       updateAt: new Date(Date.now()),
@@ -201,7 +201,7 @@ const updateBorrowedBookById = async (req, res, next) => {
     );
     res.status(200).json({
       status: 2000,
-      msg: "Update Borrowed book successfully!",
+      msg: "Cập nhật danh sách mượn thành công!",
       borrowedBookId,
     });
     console.log(LOG_TAG, "updateBorrowedBookById end!");
